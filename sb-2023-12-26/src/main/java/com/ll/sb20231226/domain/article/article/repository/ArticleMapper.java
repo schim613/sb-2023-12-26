@@ -5,6 +5,7 @@ import com.ll.sb20231226.domain.article.article.entity.Article;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Mapper
 public interface ArticleMapper {
@@ -40,4 +41,16 @@ public interface ArticleMapper {
             WHERE ID = #{id}
             """)
     void _update(Article article);
+
+    @Select("""
+            SELECT *
+            FROM (
+            	SELECT A.*,
+            	ROW_NUMBER() over(ORDER BY A.ID DESC) RN
+            	FROM ARTICLE A
+            ) A
+            WHERE A.RN <= 1
+            """)
+
+    Optional<Article> findFirstByOrderByIdDesc();
 }
